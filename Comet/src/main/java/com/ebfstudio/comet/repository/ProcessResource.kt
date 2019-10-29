@@ -10,7 +10,7 @@ abstract class ProcessResource<ResultType, RequestType, ErrorType, ResType : Res
     protected val result = MutableLiveData<ResType>()
     protected val supervisorJob = SupervisorJob()
 
-    fun asLiveData() = result as LiveData<ResType>
+    protected fun asLiveData() = result as LiveData<ResType>
 
     @WorkerThread
     protected fun setValue(newValue: ResType) {

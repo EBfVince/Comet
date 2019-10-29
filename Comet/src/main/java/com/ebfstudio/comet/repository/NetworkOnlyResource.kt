@@ -1,18 +1,17 @@
 package com.ebfstudio.comet.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 
-abstract class NetworkOnlyResource<ResultType, RequestType, ErrorType, ResType : Resource<ResultType, ErrorType>>(
-    private val resFactory: ResourceFactory<ResultType, ErrorType, ResType>,
-    private val detectError: ProcessError<ErrorType>
-) : ProcessResource<ResultType, RequestType, ErrorType, ResType>() {
+abstract class NetworkOnlyResource<ResultType, RequestType, ErrorType, ResType : Resource<ResultType, ErrorType>>
+    : ProcessResource<ResultType, RequestType, ErrorType, ResType>() {
 
-    suspend fun build(): NetworkOnlyResource<ResultType, RequestType, ErrorType, ResType> {
+    private suspend fun build(): NetworkOnlyResource<ResultType, RequestType, ErrorType, ResType> {
 
         withContext(Dispatchers.Main) {
             result.value = resFactory.loading(null)
@@ -27,19 +26,18 @@ abstract class NetworkOnlyResource<ResultType, RequestType, ErrorType, ResType :
 
                 Log.d("NetworkOnlyResource", "Res = $rep")
 
-                // Transforme le résultat pour avoir l'objet voulu
-                val data = transform(rep)
-
-                // Envoie la réponse
-                setValue(resFactory.success(data))
+                if (isSuccessful(rep)) {
+                    setValue(resFactory.success(onSuccess(rep)))
+                } else {
+                    setValue(resFactory.error(onError(rep)))
+                }
 
             } catch (e: Exception) {
 
-                //Log.e("NetworkOnlyResource", "${e.message}")
-                e.printStackTrace()
+                Log.e("NetworkOnlyResource", "${e.message}")
 
-                val error = detectError.find(e)
-                setValue(resFactory.error(error, null))
+                val error = onError(e)
+                setValue(resFactory.error(error))
 
             }
 
@@ -49,6 +47,15 @@ abstract class NetworkOnlyResource<ResultType, RequestType, ErrorType, ResType :
 
     }
 
-    protected abstract suspend fun transform(data: RequestType): ResultType
+    suspend fun create(): LiveData<ResType> = build().asLiveData()
+
+
+    protected abstract val resFactory: ResourceFactory<ResultType, ErrorType, ResType>
+
+    protected abstract fun isSuccessful(data: RequestType): Boolean
+    protected abstract fun onSuccess(data: RequestType): ResultType
+
+    protected abstract fun onError(data: RequestType): ErrorType
+    protected abstract fun onError(e: Throwable): ErrorType
 
 }
