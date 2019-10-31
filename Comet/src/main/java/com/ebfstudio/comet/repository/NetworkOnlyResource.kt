@@ -34,7 +34,7 @@ abstract class NetworkOnlyResource<ResultType, RequestType, ErrorType, ResType :
 
             } catch (e: Exception) {
 
-                Log.e("NetworkOnlyResource", "${e.message}")
+                // Log.e("NetworkOnlyResource", "${e.message}")
 
                 val error = onError(e)
                 setValue(resFactory.error(error))
