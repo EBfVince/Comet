@@ -54,7 +54,7 @@ class EventBro<T, E, ResType : Resource<T, E>>(d: AppDispatchers, vm: ViewModel)
     EpicBro<ResType, Event<ResType>>(d, vm) {
     override fun toOutType(value: ResType): Event<ResType> = Event(value)
 
-    fun observeEvent(fragment: Fragment, onChanged: (Resource<T, E>) -> Unit) {
+    fun observeEvent(fragment: Fragment, onChanged: (ResType) -> Unit) {
         observe(fragment, EventObserver { onChanged(it) })
     }
 }
