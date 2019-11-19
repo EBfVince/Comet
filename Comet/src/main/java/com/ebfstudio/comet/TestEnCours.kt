@@ -13,11 +13,16 @@ import kotlinx.coroutines.withContext
 
 abstract class EpicBro<InType, OutType>(
     private val dispatchers: AppDispatchers,
-    private val viewModel: ViewModel
+    private val viewModel: ViewModel,
+    isEvent: Boolean = false
 ) {
 
     private val _data = MediatorLiveData<OutType>()
-    val data: LiveData<OutType> get() = _data
+    val data: LiveData<OutType> = if (isEvent) {
+        _data.toSingleEvent()
+    } else {
+        _data
+    }
 
     private var dataSource: LiveData<InType> = MutableLiveData()
     private var cacheF: suspend () -> LiveData<InType> = { MutableLiveData<InType>() }
@@ -50,6 +55,7 @@ abstract class EpicBro<InType, OutType>(
 
 }
 
+@Deprecated("Maybe try to use \"SingleEventBro\"")
 class EventBro<T, E, ResType : Resource<T, E>>(d: AppDispatchers, vm: ViewModel) :
     EpicBro<ResType, Event<ResType>>(d, vm) {
     override fun toOutType(value: ResType): Event<ResType> = Event(value)
@@ -57,6 +63,12 @@ class EventBro<T, E, ResType : Resource<T, E>>(d: AppDispatchers, vm: ViewModel)
     fun observeEvent(fragment: Fragment, onChanged: (ResType) -> Unit) {
         observe(fragment, EventObserver { onChanged(it) })
     }
+
+    fun observeTest(fragment: Fragment, onChanged: (ResType) -> Unit) {
+        val live = Transformations.map(data) { it.peekContent() }
+        live.observe(fragment.viewLifecycleOwner, onChanged)
+    }
+
 }
 
 class SameBro<T, E, ResType : Resource<T, E>>(d: AppDispatchers, vm: ViewModel) :
@@ -64,3 +76,7 @@ class SameBro<T, E, ResType : Resource<T, E>>(d: AppDispatchers, vm: ViewModel) 
     override fun toOutType(value: ResType): ResType = value
 }
 
+class SingleEventBro<T, E, ResType : Resource<T, E>>(d: AppDispatchers, vm: ViewModel) :
+    EpicBro<ResType, ResType>(d, vm, true) {
+    override fun toOutType(value: ResType): ResType = value
+}

@@ -41,4 +41,8 @@ abstract class Resource<DataType, ErrorType>(
 
     fun isValueNull() = data == null
 
+    override fun toString(): String {
+        return "Resource(status=$status, data=$data, error=$error)"
+    }
+
 }
