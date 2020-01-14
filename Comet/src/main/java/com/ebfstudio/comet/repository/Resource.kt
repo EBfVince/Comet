@@ -39,6 +39,13 @@ abstract class Resource<DataType, ErrorType>(
         return this
     }
 
+    fun onFinish(f: () -> Unit): Resource<DataType, ErrorType> {
+        if (status == Status.SUCCESS || status == Status.ERROR) {
+            f()
+        }
+        return this
+    }
+
     fun isValueNull() = data == null
 
     override fun toString(): String {

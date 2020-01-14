@@ -1,9 +1,8 @@
 package com.ebfstudio.comet
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
 import com.ebfstudio.comet.repository.Resource
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
 
 /**
@@ -26,30 +25,45 @@ abstract class EpicBro<InType, OutType>(
 
     private var dataSource: LiveData<InType> = MutableLiveData()
     private var cacheF: suspend () -> LiveData<InType> = { MutableLiveData<InType>() }
+    private var job: Job? = null
 
     abstract fun toOutType(value: InType): OutType
 
-    fun trigger(f: suspend () -> LiveData<InType>) =
-        viewModel.viewModelScope.launch(dispatchers.main) {
+    fun trigger(f: suspend () -> LiveData<InType>) {
+
+        // pour éviter les problèmes, si une tâche est déjà encours, on la cancel.
+        // lors d'un double appel à trigger par erreur, on ne fera qu'une seule fois l'action 👌
+        if (job?.isActive == true)
+            job?.cancel()
+
+        job = viewModel.viewModelScope.launch(dispatchers.main) {
 
             // On supprime toutes les sources
             _data.removeSource(dataSource)
 
+            // On execute l'action
             dataSource = withContext(dispatchers.io) { f() }
 
+            // On observe chaque changement qu'on transmet à data
             _data.addSource(dataSource) { value ->
                 _data.value = toOutType(value)
             }
 
-        }.also { cacheF = f }
+            // On garde en cache l'action
+            cacheF = f
+
+        }
+
+    }
+
 
     fun retry() = trigger(cacheF)
 
-    fun observe(fragment: Fragment, onChanged: (OutType) -> Unit) {
+    open fun observe(fragment: Fragment, onChanged: (OutType) -> Unit) {
         data.observe(fragment.viewLifecycleOwner, onChanged)
     }
 
-    fun observe(fragment: Fragment, observer: Observer<OutType>) {
+    open fun observe(fragment: Fragment, observer: Observer<OutType>) {
         data.observe(fragment.viewLifecycleOwner, observer)
     }
 
@@ -77,6 +91,22 @@ class SameBro<T, E, ResType : Resource<T, E>>(d: AppDispatchers, vm: ViewModel) 
 }
 
 class SingleEventBro<T, E, ResType : Resource<T, E>>(d: AppDispatchers, vm: ViewModel) :
-    EpicBro<ResType, ResType>(d, vm, true) {
-    override fun toOutType(value: ResType): ResType = value
+    EpicBro<ResType, SingleEvent<ResType>>(d, vm, true) {
+
+    override fun toOutType(value: ResType): SingleEvent<ResType> = SingleEvent(value)
+
+    fun observeEvent(fragment: Fragment, onChange: (ResType) -> Unit) {
+        observe(fragment, SingleEventObserver(onChange))
+    }
+
+}
+
+data class SingleEvent<T>(
+    val content: T
+)
+
+class SingleEventObserver<T>(private val onChange: (T) -> Unit) : Observer<SingleEvent<T>> {
+    override fun onChanged(t: SingleEvent<T>?) {
+        t?.let { onChange(t.content) }
+    }
 }
