@@ -1,8 +1,10 @@
 package com.ebfstudio.comet
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.*
 import com.ebfstudio.comet.repository.Resource
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**

@@ -1,2 +1,2 @@
-rootProject.name='Comet-root'
+rootProject.name='Comet'
 include ':Comet'
