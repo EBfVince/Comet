@@ -28,8 +28,8 @@ object BindingAdapter {
     @BindingAdapter("imageUrl")
     fun bindImage(imageView: ImageView, url: String?) {
 
-        if (url.isNullOrBlank())
-            return
+        /* if (url.isNullOrBlank())
+            return */
 
         Glide.with(imageView.context)
             .load(url)
