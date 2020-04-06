@@ -12,20 +12,20 @@ import com.ebfstudio.comet.repository.Resource
 object BindingAdapter {
 
     @JvmStatic
-    @BindingAdapter("app:visibleGone")
+    @BindingAdapter("visibleGone")
     fun showHide(view: View, show: Boolean) {
         view.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     @JvmStatic
-    @BindingAdapter("app:visibleInvisible")
+    @BindingAdapter("visibleInvisible")
     fun showHide2(view: View, show: Boolean) {
         view.visibility = if (show) View.VISIBLE else View.INVISIBLE
     }
 
 
     @JvmStatic
-    @BindingAdapter("app:imageUrl")
+    @BindingAdapter("imageUrl")
     fun bindImage(imageView: ImageView, url: String?) {
 
         /* if (url.isNullOrBlank())
@@ -39,14 +39,14 @@ object BindingAdapter {
     }
 
     @JvmStatic
-    @BindingAdapter("app:items")
+    @BindingAdapter("items")
     fun <T, E> items(recyclerView: RecyclerView, resource: Resource<List<T>, E>?) {
         val adapter = recyclerView.adapter as? ListAdapter<T, *>
         adapter?.submitList(resource?.data)
     }
 
     @JvmStatic
-    @BindingAdapter("app:items2")
+    @BindingAdapter("items2")
     fun <T> items(recyclerView: RecyclerView, list: List<T>?) {
         val adapter = recyclerView.adapter as? ListAdapter<T, *>
         adapter?.submitList(list)

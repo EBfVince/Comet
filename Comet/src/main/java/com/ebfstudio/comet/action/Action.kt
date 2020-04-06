@@ -1,7 +1,6 @@
 package com.ebfstudio.comet.action
 
 import androidx.lifecycle.ViewModel
-import com.ebfstudio.comet.AbstractAction
 import com.ebfstudio.comet.util.AppDispatchers
 import com.ebfstudio.comet.repository.Resource
 

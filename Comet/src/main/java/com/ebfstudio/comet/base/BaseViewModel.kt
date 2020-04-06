@@ -3,6 +3,8 @@ package com.ebfstudio.comet.base
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavDirections
+import com.ebfstudio.comet.action.Action
+import com.ebfstudio.comet.action.ActionSingleEvent
 import com.ebfstudio.comet.navigation.NavigationCommand
 import com.ebfstudio.comet.repository.Resource
 import com.ebfstudio.comet.util.AppDispatchers
@@ -30,6 +32,6 @@ abstract class BaseViewModel(private val dispatchers: AppDispatchers) : ViewMode
         Action<T, E, ResType>(dispatchers, this)
 
     protected fun <T, E, ResType : Resource<T, E>> singleEventAction() =
-        SingleEventAction<T, E, ResType>(dispatchers, this)
+        ActionSingleEvent<T, E, ResType>(dispatchers, this)
 
 }
