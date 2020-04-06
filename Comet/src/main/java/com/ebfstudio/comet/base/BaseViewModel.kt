@@ -28,10 +28,10 @@ abstract class BaseViewModel(private val dispatchers: AppDispatchers) : ViewMode
     }
 
 
-    protected fun <T, E, ResType : Resource<T, E>> action() =
+    protected fun <T, E, ResType : Resource<T, E>> createAction() =
         Action<T, E, ResType>(dispatchers, this)
 
-    protected fun <T, E, ResType : Resource<T, E>> singleEventAction() =
+    protected fun <T, E, ResType : Resource<T, E>> createSingleEventAction() =
         ActionSingleEvent<T, E, ResType>(dispatchers, this)
 
 }
