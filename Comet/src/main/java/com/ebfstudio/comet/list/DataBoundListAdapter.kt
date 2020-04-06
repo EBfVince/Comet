@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ebfstudio.comet.liste
+package com.ebfstudio.comet.list
 
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding

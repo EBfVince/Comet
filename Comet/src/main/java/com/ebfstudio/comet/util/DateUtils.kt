@@ -1,4 +1,4 @@
-package com.ebfstudio.comet
+package com.ebfstudio.comet.util
 
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -26,7 +26,10 @@ object DateUtils {
      * @return La date au format yyyy-MM-dd ou "" si date==null
      */
     fun formatDateYMDHMS(date: DateTime): String =
-        formatDate(date, FORMAT_YMDHMS)
+        formatDate(
+            date,
+            FORMAT_YMDHMS
+        )
 
 
 }

@@ -1,4 +1,4 @@
-package com.ebfstudio.comet
+package com.ebfstudio.comet.util
 
 import kotlinx.coroutines.CoroutineDispatcher
 

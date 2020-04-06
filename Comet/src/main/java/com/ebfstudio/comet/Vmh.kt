@@ -1,9 +1,11 @@
 package com.ebfstudio.comet
 
 import androidx.lifecycle.*
+import com.ebfstudio.comet.util.AppDispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Deprecated(message = "Remplacé par SingleEventAction")
 class Vmh<T>(
     private val viewModel: ViewModel,
     private val dispatchers: AppDispatchers,

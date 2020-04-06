@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ebfstudio.comet
+package com.ebfstudio.comet.util
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle

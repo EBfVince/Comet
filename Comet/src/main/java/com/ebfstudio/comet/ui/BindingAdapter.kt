@@ -1,4 +1,4 @@
-package com.ebfstudio.comet
+package com.ebfstudio.comet.ui
 
 import android.view.View
 import android.widget.ImageView
